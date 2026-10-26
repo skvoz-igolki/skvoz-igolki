@@ -24,7 +24,7 @@ try:
         assert urlparse(draft_url).path == '/Uliamel'
         draft = parse_qs(urlparse(draft_url).query)['text'][0]
         assert draft == js('buildOrder().message')
-        assert ('Ссылка:' in draft) == bool(site_url)
+        assert ('Ссылка:' in draft) == (bool(site_url) or TEST_BASE.startswith('https:'))
         assert js("document.querySelector('#basketCount').textContent") == '6'
 finally:
     js(f'window.SHOP_CONFIG.SITE_URL={json.dumps(original_site_url)};currentOrder=window.originalCurrentOrder;renderCart()')

@@ -67,6 +67,7 @@ else:
     expected_total = js("4*items.find(p=>p.slug==='tuya-smaragd').price+2*items.find(p=>p.slug==='el-golubaya').price")
     assert js('buildOrder().total') == expected_total
 
+    js("window.SHOP_CONFIG.SITE_URL='';renderCart()")
     # Prevent all real navigation to Telegram, while testing the actual click handler.
     js("""window.nativeTelegramOpen=window.open.bind(window);window.telegramNavigations=[];window.telegramOpens=0;
     window.testTelegramOpen=(url,target)=>{window.telegramOpens++;window.mockTelegramTab={closed:false,opener:'initial',document:{title:'',body:{textContent:''}},location:{replace:url=>window.telegramNavigations.push(url)},close(){this.closed=true}};return window.mockTelegramTab};window.open=window.testTelegramOpen;
@@ -89,17 +90,18 @@ else:
     assert js("document.querySelector('#basketCount').textContent") == '6'
     click('#copyOrder')
     wait_for('window.copied.length>0')
-    assert 'Ссылка:' not in js('window.copied') and 'file://' not in js('window.copied')
+    assert ('Ссылка:' in js('window.copied')) == TEST_BASE.startswith('https:')
+    assert 'file://' not in js('window.copied')
 
-    js("window.SHOP_CONFIG.SITE_URL='https://shop.invalid/garden';renderCart()")
+    js("window.SHOP_CONFIG.SITE_URL='https://skvoz-igolki-miv3dgeniy-7rsq.onreza.app/garden';renderCart()")
     message = js('buildOrder().message')
     assert message.count('Количество:') == 2
     assert message.count('Цена:') == 2
     assert message.count('Сумма:') == 2
     assert 'Количество: 4 шт.' in message and 'Количество: 2 шт.' in message
     assert '\n\n' in message
-    assert 'https://shop.invalid/garden/product.html?product=tuya-smaragd' in message
-    assert 'https://shop.invalid/garden/product.html?product=el-golubaya' in message
+    assert 'https://skvoz-igolki-miv3dgeniy-7rsq.onreza.app/garden/product.html?product=tuya-smaragd' in message
+    assert 'https://skvoz-igolki-miv3dgeniy-7rsq.onreza.app/garden/product.html?product=el-golubaya' in message
     assert js('fmt(buildOrder().total)') in message
     click('#sendTelegram')
     wait_for('window.telegramNavigations.length===2')
@@ -143,11 +145,11 @@ else:
     exec(compile((ROOT / 'tests/telegram_popup_gesture.py').read_text(encoding='utf-8'), 'telegram_popup_gesture.py', 'exec'))
 
     # Invalid public addresses never leak local file paths into copied orders.
-    for invalid in ['file:///D:/private/', 'http://shop.invalid/', 'not a URL', 'https://shop.invalid/?token=secret']:
+    for invalid in ['file:///D:/private/', 'http://skvoz-igolki-miv3dgeniy-7rsq.onreza.app/', 'not a URL', 'https://skvoz-igolki-miv3dgeniy-7rsq.onreza.app/?token=secret']:
         js(f'window.SHOP_CONFIG.SITE_URL={json.dumps(invalid)}')
         assert js('publicSiteUrl()===null')
         assert 'Ссылка:' not in js('buildOrder().message')
-    js("window.SHOP_CONFIG.SITE_URL='https://shop.invalid/';window.longOrderPlant=items.find(p=>p.slug===Object.keys(cart)[0]);window.savedPlantName=window.longOrderPlant.name;window.longOrderPlant.name='x'.repeat(4500);window.open=(url,target)=>{window.mockTelegramTab={closed:false,opener:null,document:{title:'',body:{textContent:''}},location:{replace:u=>window.telegramNavigations.push(u)},close(){this.closed=true}};return window.mockTelegramTab}")
+    js("window.SHOP_CONFIG.SITE_URL='https://skvoz-igolki-miv3dgeniy-7rsq.onreza.app/';window.longOrderPlant=items.find(p=>p.slug===Object.keys(cart)[0]);window.savedPlantName=window.longOrderPlant.name;window.longOrderPlant.name='x'.repeat(4500);window.open=(url,target)=>{window.mockTelegramTab={closed:false,opener:null,document:{title:'',body:{textContent:''}},location:{replace:u=>window.telegramNavigations.push(u)},close(){this.closed=true}};return window.mockTelegramTab}")
     count = js('window.telegramNavigations.length')
     click('#sendTelegram')
     wait_for('window.mockTelegramTab.closed')

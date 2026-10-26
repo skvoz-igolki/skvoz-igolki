@@ -1,14 +1,31 @@
 'use strict';
 
-function publicSiteUrl() {
-  const value = String(window.SHOP_CONFIG?.SITE_URL || '').trim();
-  if (!value) return null;
+function normalizePublicSiteUrl(value, fromLocation = false) {
   try {
     const url = new URL(value);
-    if (url.protocol !== 'https:' || !url.hostname || url.username || url.password || url.search || url.hash || /\.html?$/i.test(url.pathname)) return null;
-    if (!url.pathname.endsWith('/')) url.pathname += '/';
+    if (url.protocol !== 'https:' || !url.hostname || url.username || url.password) return null;
+    if (fromLocation) { url.search = ''; url.hash = ''; }
+    else if (url.search || url.hash) return null;
+    // Both a configured directory and an index/product HTML address resolve to
+    // the containing site directory, retaining its host and deployment subfolder.
+    if (/\.html?$/i.test(url.pathname)) url.pathname = url.pathname.slice(0, url.pathname.lastIndexOf('/') + 1);
+    else if (!url.pathname.endsWith('/')) url.pathname += '/';
     return url.href;
   } catch { return null; }
+}
+
+function publicSiteUrl() {
+  // Read at call time, so a config that loaded later is not cached as empty.
+  const value = String(window.SHOP_CONFIG?.SITE_URL || '').trim();
+  if (value) return normalizePublicSiteUrl(value);
+  if (location.protocol === 'https:') return normalizePublicSiteUrl(location.href, true);
+  return null; // Never share a buyer's local file:// path.
+}
+
+function publicProductUrl(product, base = publicSiteUrl()) {
+  if (!base) return null;
+  const url = new URL(productUrl(product), base);
+  return url.protocol === 'https:' ? url.href : null;
 }
 
 function telegramChatUrl() {
@@ -29,7 +46,8 @@ function buildOrder() {
       `Цена: ${fmt(product.price)}/шт.`,
       `Сумма: ${fmt(product.price * quantity)}`
     ];
-    if (base) lines.push('Ссылка: ' + new URL(productUrl(product), base).href);
+    const link = publicProductUrl(product, base);
+    if (link) lines.push('Ссылка: ' + link);
     return lines.join('\n');
   }).join('\n\n') + `\n\nИтого: ${fmt(total)}\n\nПодскажите, пожалуйста, наличие растений и условия доставки.` : '';
   const chat = telegramChatUrl();
