@@ -1,0 +1,23 @@
+{
+  "name": "Сосна горная «Мугус»",
+  "category": "Сосны",
+  "description": "",
+  "price": 1690,
+  "currency": "RUB",
+  "size": "Высота 30–40 см · контейнер",
+  "height": "30–40 см",
+  "tag": "Выбор сада",
+  "tags": [
+    "Выбор сада"
+  ],
+  "characteristics": {
+    "species": "Сосна горная",
+    "variety": "Мугус",
+    "height": "30–40 см"
+  },
+  "images": [
+    "https://images.unsplash.com/photo-1459156212016-c812468e2115?auto=format&fit=crop&w=700&q=82"
+  ],
+  "order": 4,
+  "legacyId": 4
+}

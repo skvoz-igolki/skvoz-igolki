@@ -1,0 +1,21 @@
+{
+  "name": "Можжевельник «Блю Эрроу»",
+  "category": "Можжевельники",
+  "description": "",
+  "price": 1290,
+  "currency": "RUB",
+  "size": "Высота 60–80 см · контейнер",
+  "height": "60–80 см",
+  "tag": "",
+  "tags": [],
+  "characteristics": {
+    "species": "Можжевельник",
+    "variety": "Блю Эрроу",
+    "height": "60–80 см"
+  },
+  "images": [
+    "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=700&q=82"
+  ],
+  "order": 3,
+  "legacyId": 3
+}

@@ -1,0 +1,23 @@
+{
+  "name": "Туя западная «Смарагд»",
+  "category": "Туи",
+  "description": "",
+  "price": 1490,
+  "currency": "RUB",
+  "size": "Высота 80–100 см · контейнер",
+  "height": "80–100 см",
+  "tag": "Популярное",
+  "tags": [
+    "Популярное"
+  ],
+  "characteristics": {
+    "species": "Туя западная",
+    "variety": "Смарагд",
+    "height": "80–100 см"
+  },
+  "images": [
+    "https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=700&q=82"
+  ],
+  "order": 10,
+  "legacyId": 10
+}

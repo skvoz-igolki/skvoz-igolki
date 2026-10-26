@@ -1,0 +1,25 @@
+{
+  "name": "Ель Юпитер колючая",
+  "category": "Ели",
+  "description": "",
+  "availability": false,
+  "price": 2500,
+  "currency": "RUB",
+  "size": "Высота 60–80 см · контейнер",
+  "height": "60–80 см",
+  "tag": "Новинка",
+  "tags": [
+    "Новинка"
+  ],
+  "characteristics": {
+    "species": "Ель",
+    "variety": "Юпитер",
+    "height": "60–80 см"
+  },
+  "images": [
+    "1.jpg",
+    "2.jpg"
+  ],
+  "order": 1,
+  "legacyId": 1
+}

@@ -1,0 +1,21 @@
+{
+  "name": "Туя западная «Брабант»",
+  "category": "Туи",
+  "description": "",
+  "price": 1790,
+  "currency": "RUB",
+  "size": "Высота 100–120 см · контейнер",
+  "height": "100–120 см",
+  "tag": "",
+  "tags": [],
+  "characteristics": {
+    "species": "Туя западная",
+    "variety": "Брабант",
+    "height": "100–120 см"
+  },
+  "images": [
+    "https://images.unsplash.com/photo-1444492417251-9c84a5fa18e0?auto=format&fit=crop&w=700&q=82"
+  ],
+  "order": 5,
+  "legacyId": 5
+}

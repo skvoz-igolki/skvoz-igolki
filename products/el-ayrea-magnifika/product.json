@@ -1,0 +1,25 @@
+{
+  "name": "Ель Ауреа Магнифика обыкновенная",
+  "category": "Ели",
+  "description": "",
+  "availability": true,
+  "price": 3500,
+  "currency": "RUB",
+  "size": "Высота 60–80 см · контейнер",
+  "height": "60–80 см",
+  "tag": "Новинка",
+  "tags": [
+    "Новинка"
+  ],
+  "characteristics": {
+    "species": "Ель",
+    "variety": "Глаука",
+    "height": "60–80 см"
+  },
+  "images": [
+    "1.jpg",
+    "2.jpg"
+  ],
+  "order": 2,
+  "legacyId": 2
+}

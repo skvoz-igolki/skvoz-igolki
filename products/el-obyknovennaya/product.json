@@ -1,0 +1,20 @@
+{
+  "name": "Ель обыкновенная",
+  "category": "Ели",
+  "description": "",
+  "price": 1390,
+  "currency": "RUB",
+  "size": "Высота 80–100 см · контейнер",
+  "height": "80–100 см",
+  "tag": "",
+  "tags": [],
+  "characteristics": {
+    "species": "Ель обыкновенная",
+    "height": "80–100 см"
+  },
+  "images": [
+    "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=700&q=82"
+  ],
+  "order": 6,
+  "legacyId": 6
+}

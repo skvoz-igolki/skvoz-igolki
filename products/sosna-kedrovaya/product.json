@@ -1,0 +1,22 @@
+{
+  "name": "Сосна кедровая",
+  "category": "Сосны",
+  "description": "",
+  "price": 3190,
+  "currency": "RUB",
+  "size": "Высота 50–70 см · контейнер",
+  "height": "50–70 см",
+  "tag": "Особенное",
+  "tags": [
+    "Особенное"
+  ],
+  "characteristics": {
+    "species": "Сосна кедровая",
+    "height": "50–70 см"
+  },
+  "images": [
+    "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=700&q=82"
+  ],
+  "order": 8,
+  "legacyId": 8
+}

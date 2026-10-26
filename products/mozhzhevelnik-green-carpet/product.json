@@ -1,0 +1,21 @@
+{
+  "name": "Можжевельник «Грин Карпет»",
+  "category": "Можжевельники",
+  "description": "",
+  "price": 990,
+  "currency": "RUB",
+  "size": "Высота 15–25 см · контейнер",
+  "height": "15–25 см",
+  "tag": "",
+  "tags": [],
+  "characteristics": {
+    "species": "Можжевельник",
+    "variety": "Грин Карпет",
+    "height": "15–25 см"
+  },
+  "images": [
+    "https://images.unsplash.com/photo-1483794344563-d27a8d18014e?auto=format&fit=crop&w=700&q=82"
+  ],
+  "order": 7,
+  "legacyId": 7
+}
