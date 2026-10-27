@@ -40,7 +40,7 @@ if os.environ.get('SKVOZ_ORDER_MODE')=='restore':
 else:
     assert js('Object.keys(cart).length')==0
     quantity(a,1);remove(a)
-    assert js("document.querySelector('#toastMessage').textContent")=='Товар удалён из корзины'
+    assert js("document.querySelector('#toastMessage').textContent")=='Удалено из корзины'
     assert not js("document.querySelector('#toastUndo').hidden")
     click('#toastMessage')
     assert js(count(a,0)) and js("document.querySelector('#overlay').hidden")
@@ -101,7 +101,7 @@ else:
     js('cartRequest=window.originalCartRequest;window.finishEarlierUndo()')
     wait_for('pendingCartRestores.size===0')
     assert js(f'lastCartRemoval.slug==={json.dumps(b)}')
-    assert js("document.querySelector('#toastMessage').textContent")=='Товар удалён из корзины'
+    assert js("document.querySelector('#toastMessage').textContent")=='Удалено из корзины'
     restore(b,4)
     # Only the isolated copy's generated file is varied. Source JSON/catalog stay unchanged.
     catalog=Path(os.environ['SKVOZ_TEST_SITE_PATH'])/'catalog.generated.js'

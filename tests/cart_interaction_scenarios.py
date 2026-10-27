@@ -37,7 +37,7 @@ if mode=='seed':
     js(f'document.querySelector({selector}).click();document.querySelector({selector}).click()')
     wait_for(count(1));wait_for(state('Удалить из корзины'))
     assert len(pages())==before
-    assert js("document.querySelector('#toastMessage').textContent")=='Товар добавлен в корзину'
+    assert js("document.querySelector('#toastMessage').textContent")=='Добавлено в корзину'
     assert not js("document.querySelector('#toast').hidden")
     assert js("document.querySelector('#openCart').onclick===openCart")
     click('#toastCart')
@@ -61,7 +61,7 @@ if mode=='seed':
     call('Input.dispatchMouseEvent',{'type':'mouseMoved','x':5,'y':5})
     wait_for("document.querySelector('#toast').hidden",6)
     # Focusing the real action keeps the toast available; Space/Enter use native buttons.
-    js("toast('Товар добавлен в корзину',{cartAction:true});document.querySelector('#toastCart').focus()")
+    js("toast('Добавлено в корзину',{cartAction:true});document.querySelector('#toastCart').focus()")
     time.sleep(4.5)
     assert not js("document.querySelector('#toast').hidden")
     key(' ','Space',32)
@@ -69,11 +69,11 @@ if mode=='seed':
     assert js("document.querySelector('#toast').hidden")
     click('#closeCart')
     assert js('document.activeElement.id')=='openCart'
-    js("toast('Товар добавлен в корзину',{cartAction:true});document.querySelector('#toastCart').focus()")
+    js("toast('Добавлено в корзину',{cartAction:true});document.querySelector('#toastCart').focus()")
     key('Enter','Enter',13)
     wait_for("document.querySelector('#overlay').classList.contains('open')")
     click('#closeCart')
-    js("toast('Товар добавлен в корзину',{cartAction:true})")
+    js("toast('Добавлено в корзину',{cartAction:true})")
     click('#toastMessage')
     wait_for("document.querySelector('#overlay').classList.contains('open')")
     click('[data-delta="1"]');wait_for(count(2))
@@ -125,7 +125,7 @@ else:
         call('Emulation.setDeviceMetricsOverride',{'width':width,'height':900,'deviceScaleFactor':1,'mobile':width<760})
         assert js('document.documentElement.scrollWidth<=innerWidth')
         assert js(f'document.querySelector({selector}).getBoundingClientRect().height>=44')
-        js("toast('Товар добавлен в корзину',{cartAction:true})")
+        js("toast('Добавлено в корзину',{cartAction:true})")
         assert js("document.querySelector('#toastCart').getBoundingClientRect().height>=44")
         assert js("document.querySelector('#toast').getBoundingClientRect().width<=innerWidth")
         click('#toastCart')

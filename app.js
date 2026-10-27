@@ -15,7 +15,7 @@ function placeToast() {
 }
 function showRemovalUndo(snapshot) {
   if (!snapshot || !Number.isSafeInteger(snapshot.quantity) || snapshot.quantity < 1) return;
-  toast('Товар удалён из корзины', {undoAction:true, duration:5000});
+  toast('Удалено из корзины', {undoAction:true, duration:5000});
   lastCartRemoval = {slug:snapshot.slug, quantity:snapshot.quantity};
 }
 async function undoRemoval() {
@@ -166,7 +166,7 @@ document.addEventListener('click', async event => {
   if (button.hasAttribute('data-add')) {
     if (event.detail > 1) return;
     const result = await requestCartToggle(id);
-    if (result?.result === 'added') toast('Товар добавлен в корзину', {cartAction:true});
+    if (result?.result === 'added') toast('Добавлено в корзину', {cartAction:true});
     // Removal notifications use the exact snapshot returned by the storage frame.
   } else {
     await requestCartChange(id, Number(button.dataset.delta));
