@@ -70,6 +70,9 @@
         // have an older catalog until it is refreshed.
         write(read());
       }
+    } else if (action === 'clear') {
+      write({});
+      result = 'cleared';
     } else if (action === 'change') {
       const item = items.find(p => p.slug === slug);
       if (item && item.availability !== false && (delta === 1 || delta === -1)) {

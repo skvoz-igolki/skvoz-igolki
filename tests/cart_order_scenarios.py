@@ -72,7 +72,7 @@ else:
     js("""window.nativeTelegramOpen=window.open.bind(window);window.telegramNavigations=[];window.telegramOpens=0;
     window.testTelegramOpen=(url,target)=>{window.telegramOpens++;window.mockTelegramTab={closed:false,opener:'initial',document:{title:'',body:{textContent:''}},location:{replace:url=>window.telegramNavigations.push(url)},close(){this.closed=true}};return window.mockTelegramTab};window.open=window.testTelegramOpen;
     window.copied='';Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async text=>{window.copied=text}}});""")
-    assert js("document.querySelector('#openTelegramChat').href") == 'https://t.me/Uliamel'
+    assert js("document.querySelector('#openTelegramChat')===null")
     assert js("typeof document.querySelector('#sendTelegram').onclick==='function'")
     assert not js("document.querySelector('#sendTelegram').disabled")
     assert not errors, errors
@@ -114,10 +114,7 @@ else:
     assert js("document.querySelector('#basketCount').textContent") == '6', 'Telegram must not clear the cart'
     click('#copyOrder')
     wait_for(f'window.copied==={json.dumps(message)}')
-    # A direct-chat link is checked and activated with navigation prevented.
-    js("document.querySelector('#openTelegramChat').addEventListener('click',e=>{e.preventDefault();window.openedChat=e.currentTarget.href})")
-    click('#openTelegramChat')
-    assert js('window.openedChat') == 'https://t.me/Uliamel'
+    # The redundant direct-chat action was removed; popup recovery remains.
     js('window.open=()=>null')
     click('#sendTelegram')
     wait_for("!document.querySelector('#telegramFallback').hidden")

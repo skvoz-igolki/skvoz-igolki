@@ -50,6 +50,19 @@ async function requestCartToggle(slug) {
   }
 }
 
+let pendingCartClear = false;
+async function requestCartClear() {
+  if (pendingCartClear) return {result:'busy'};
+  pendingCartClear = true;
+  window.dispatchEvent(new Event('cartbuttonschange'));
+  try {
+    await cartInitialized;
+    return await cartRequest('clear');
+  } finally {
+    pendingCartClear = false;
+    window.dispatchEvent(new Event('cartbuttonschange'));
+  }
+}
 const pendingCartRestores = new Set();
 async function requestCartRestore(snapshot) {
   if (pendingCartRestores.size) return {result:'busy'};

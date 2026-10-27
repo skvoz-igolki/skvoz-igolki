@@ -63,9 +63,6 @@ function orderNotice(message) {
 function updateOrderActions() {
   const order = buildOrder();
   $('#sendTelegram').disabled = !cartReady || !order.entries.length;
-  const chatLink = $('#openTelegramChat');
-  if (order.chatUrl) chatLink.href = order.chatUrl; else chatLink.removeAttribute('href');
-  chatLink.textContent = 'Открыть чат @' + String(window.SHOP_CONFIG?.TELEGRAM_USERNAME || '').replace(/^@/, '');
   $('#telegramFallback').hidden = true;
   $('#telegramFallback').removeAttribute('href');
   if (!order.entries.length) orderNotice('');
