@@ -63,6 +63,8 @@ function orderNotice(message) {
 function updateOrderActions() {
   const order = buildOrder();
   $('#sendTelegram').disabled = !cartReady || !order.entries.length;
+  $('#sendMax').disabled = !cartReady || !order.entries.length || maxOrderBusy;
+  $('#maxFallback').hidden = true;
   $('#telegramFallback').hidden = true;
   $('#telegramFallback').removeAttribute('href');
   if (!order.entries.length) orderNotice('');
@@ -154,4 +156,35 @@ async function sendOrderToTelegram() {
     tab?.close();
     orderNotice('Не удалось подготовить переход. Скопируйте заказ и откройте чат продавца.');
   }
+}
+
+let maxOrderBusy = false;
+function maxContactUrl() {
+  try {
+    const url = new URL(String(window.SHOP_CONFIG?.MAX_CONTACT_URL || '').trim());
+    // Use the exact contact link copied from MAX, never construct one from a phone/name.
+    if (url.protocol !== 'https:' || url.hostname !== 'max.ru' || url.port || url.username || url.password || !new RegExp('^/u/[A-Za-z0-9_-]+/?$').test(url.pathname) || url.search || url.hash) return null;
+    return url.href;
+  } catch { return null; }
+}
+async function sendOrderToMax() {
+  if (maxOrderBusy || !cartReady || !buildOrder().entries.length) return;
+  const contact = maxContactUrl();
+  if (!contact) { orderNotice('Укажите ссылку на профиль продавца MAX_CONTACT_URL в site-config.js, скопированную из MAX.'); return; }
+  maxOrderBusy = true;
+  $('#sendMax').disabled = true;
+  // Reserve during the click, before reading storage or attempting clipboard access.
+  let tab;
+  try { tab = window.open('about:blank', '_blank'); if (tab) tab.opener = null; } catch {}
+  try {
+    const order = await currentOrder();
+    if (!order.entries.length) { tab?.close(); return; }
+    const copied = await copyOrderText(order);
+    const fallback = $('#maxFallback');
+    fallback.href = contact; fallback.hidden = false;
+    if (tab && !tab.closed) tab.location.replace(contact);
+    orderNotice((copied ? 'Заказ скопирован. Вставьте его в чат MAX и отправьте самостоятельно.' : 'Скопируйте выделенный текст заказа вручную и вставьте его в чат MAX.') + (!tab || tab.closed ? ' Если чат не открылся, нажмите «Открыть контакт MAX».' : ''));
+  } catch {
+    tab?.close(); orderNotice('Не удалось подготовить заказ для MAX. Попробуйте скопировать заказ.');
+  } finally { maxOrderBusy = false; $('#sendMax').disabled = !cartReady || !buildOrder().entries.length; }
 }

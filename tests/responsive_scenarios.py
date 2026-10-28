@@ -32,8 +32,8 @@ for width in widths:
     assert js("(()=>{const r=document.querySelector('.stock-switch').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth})()"),width
     assert js("document.querySelectorAll('#inStockOnly').length===1&&document.querySelector('#inStockOnly').checked"),width
     if width<768:
-        assert js("document.querySelector('.hero').getBoundingClientRect().height<480"),width
-        assert js("document.querySelector('.hero-photo').getBoundingClientRect().height<=150"),width
+        assert js("document.querySelector('.hero').getBoundingClientRect().height<760"),width
+        assert js("document.querySelector('.hero-photo').getBoundingClientRect().height<=220"),width
         assert js("(()=>{const t=document.querySelector('.tag-buttons').getBoundingClientRect(),s=document.querySelector('.stock-switch').getBoundingClientRect();return s.top>=t.bottom+7&&Math.abs(s.left-t.left)<3})()"),width
         for selector in ['#filters','.tag-buttons']:
             assert js(f"getComputedStyle(document.querySelector({json.dumps(selector)})).scrollbarWidth==='none'"),width
@@ -46,7 +46,7 @@ for width in widths:
         assert js("[...document.querySelectorAll('#products .product')].every(e=>e.scrollWidth<=e.clientWidth)"),width
         assert js("[...document.querySelectorAll('#products h3')].every(e=>e.clientHeight<=parseFloat(getComputedStyle(e).lineHeight)*2+1)"),width
     else:
-        assert js("document.querySelector('.hero').getBoundingClientRect().height<560"),width
+        assert js("document.querySelector('.hero').getBoundingClientRect().height<760"),width
         assert js("(()=>{const t=document.querySelector('.tag-buttons').getBoundingClientRect(),s=document.querySelector('.stock-switch').getBoundingClientRect();return Math.abs((s.top+s.bottom-t.top-t.bottom)/2)<3})()"),width
         assert js("[...document.querySelectorAll('.card-size')].every(e=>getComputedStyle(e).display!=='none')"),width
     assert js("getComputedStyle(document.querySelector('.hero-photo')).objectFit==='contain'"),width
@@ -76,7 +76,7 @@ for width in [320,430,1440]:
     for w,h in [(1600,900),(900,1600),(1000,1000)]:
         hero_fixture(w,h)
         assert js("getComputedStyle(document.querySelector('.hero-photo')).objectFit==='contain'")
-        assert js("document.querySelector('.hero').getBoundingClientRect().height<"+('480' if width<768 else '560'))
+        assert js("document.querySelector('.hero').getBoundingClientRect().height<"+('560' if width<768 else '760'))
 js('document.querySelector(".hero-photo").src='+json.dumps(original_hero))
 # Offscreen category is revealed without changing the independent controls.
 call('Emulation.setDeviceMetricsOverride',{'width':320,'height':850,'deviceScaleFactor':1,'mobile':True})

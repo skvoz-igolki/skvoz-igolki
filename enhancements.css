@@ -53,7 +53,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 .toast:focus-within{outline:3px solid #8ba778;outline-offset:4px}
 @media(max-width:400px){.toast{width:calc(100% - 32px);gap:8px;padding:10px 12px}.toast button{padding:9px 10px}.toast span{min-width:0}.product .add{font-size:12px}}
 
-.toast.show[data-undo-action="true"]{pointer-events:auto;cursor:default}.toast.in-cart{position:static;transform:none;max-width:100%;width:100%;margin:12px 0;flex-shrink:0}.toast.in-cart.show{transform:none}#toastClose{width:44px;min-width:44px;padding:0;border:0;border-radius:50%;background:transparent;color:#fff;font-size:22px}#toastUndo:disabled{opacity:.5;cursor:wait}#cartNoticeSlot{flex-shrink:0}
+.toast.show[data-undo-action="true"]{pointer-events:auto;cursor:default}.toast.in-cart{position:static;transform:none;max-width:100%;width:100%;margin:12px 0;flex-shrink:0}.toast.in-cart.show{transform:none}#toastUndo:disabled{opacity:.5;cursor:wait}#cartNoticeSlot{flex-shrink:0}
 
 /* Compact catalog controls and cart, shared by file and HTTPS pages. */
 .cat-row{flex-wrap:nowrap;overflow-x:auto;max-width:100%;padding:4px 2px 9px;overscroll-behavior-x:contain;scrollbar-width:thin}
@@ -79,7 +79,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 .toast{min-height:44px;padding:2px 10px;gap:8px;border-radius:14px;font-size:12px;line-height:1.35}
 .toast button{min-height:44px;padding:6px 10px;font-size:12px}
 .toast span{min-width:0}
-#toastClose{width:40px;min-width:40px}
+
 .toast.in-cart{margin:8px 0}
 @media(max-width:767px){
  .shell{padding-left:12px;padding-right:12px}
@@ -135,7 +135,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 #toastMessage{flex:1;line-height:1.4;overflow-wrap:anywhere}
 .toast button{background:#e5eedb;border:1px solid #c6d6bd;color:var(--pine);border-radius:9px;min-height:44px;padding:6px 10px;white-space:nowrap}
 .toast button:hover:not(:disabled){background:#d8e8c9}
-#toastClose{width:44px;min-width:44px;min-height:44px;color:var(--moss);border:0;background:transparent;font-size:20px}
+
 @starting-style{.toast.show{opacity:0}}
 @media(max-width:767px){
  .hero-photo{width:100%;height:clamp(110px,32vw,150px);max-height:150px;object-fit:contain;object-position:center}
@@ -155,4 +155,20 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
  .toast{gap:6px;padding:3px 8px;max-width:calc(100% - 16px)}
  .toast button{padding:6px 8px}
  .toast.in-cart{width:100%;max-width:100%}
+}
+
+/* Separate image and copy so the photo occupies its full desktop column. */
+.hero{grid-template-columns:minmax(0,1fr) auto}
+.hero-photo{grid-area:1/2;width:auto;max-width:min(55vw,650px);height:auto;max-height:520px;align-self:center;justify-self:end;object-fit:contain}
+.hero-inner{grid-area:1/1;padding:28px 32px;min-width:0}
+.hero:after{display:none}
+.hero-stamp{right:18px;bottom:16px}
+.add,.product-add{display:flex;align-items:center;justify-content:center;text-align:center}
+.cart-label-full,.cart-label-short{text-align:center}
+.max-button{margin-top:10px;min-height:48px;background:#e5eedb;color:var(--pine);border:1px solid #b9cbb3;font-size:13px}
+.max-button:hover:not(:disabled){background:#d8e8c9}
+@media(max-width:767px){
+ .hero-photo{height:auto;max-height:220px;max-width:100%;width:100%;object-fit:contain}
+ .hero-inner{padding:16px 20px}
+ .hero-stamp{margin-bottom:12px}
 }

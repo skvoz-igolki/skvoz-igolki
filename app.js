@@ -37,12 +37,7 @@ async function undoRemoval() {
 }
 window.addEventListener('cartremoved', event => showRemovalUndo(event.detail));
 $('#toastUndo').addEventListener('click', event => { event.stopPropagation(); undoRemoval(); });
-$('#toastClose').addEventListener('click', event => {
-  event.stopPropagation();
-  const focused = $('#toast').contains(document.activeElement);
-  hideToast();
-  if (focused) ($('#overlay').hidden ? $('#openCart') : $('#closeCart')).focus();
-});
+
 
 let toastTimer;
 let toastDeadline = 0;
@@ -79,7 +74,7 @@ function toast(message, {cartAction = false, undoAction = false, duration = 4200
   $('#toastCart').hidden = !cartAction;
   $('#toastUndo').hidden = !undoAction;
   $('#toastUndo').disabled = !!pendingCartRestores.size;
-  $('#toastClose').hidden = !undoAction;
+
   el.dataset.undoAction = String(undoAction);
   el.dataset.cartAction = String(cartAction);
   placeToast();
@@ -234,6 +229,7 @@ $('#confirmClearCart').onclick = async () => {
 };
 $('#copyOrder').onclick = copyCurrentOrder;
 $('#sendTelegram').onclick = sendOrderToTelegram;
+$('#sendMax').onclick = sendOrderToMax;
 window.addEventListener('cartchange', renderCart);
 $('#year').textContent = new Date().getFullYear();
 renderCart();

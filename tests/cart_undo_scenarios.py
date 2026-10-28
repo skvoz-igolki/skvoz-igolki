@@ -135,13 +135,14 @@ else:
     wait_for("document.querySelector('#toast').hidden",6)
     assert js('lastCartRemoval===null')
     quantity(a,1);remove(a)
+    time.sleep(.25)  # Let the toast appearance transition settle before pointer coordinates.
     point=js("(()=>{const r=document.querySelector('#toast').getBoundingClientRect();return {x:r.x+8,y:r.y+8}})()")
     call('Input.dispatchMouseEvent',{'type':'mouseMoved',**point});time.sleep(5.2)
     assert js('lastCartRemoval!==null') and not js("document.querySelector('#toast').hidden")
     js("document.querySelector('#toastUndo').focus()")
     call('Input.dispatchMouseEvent',{'type':'mouseMoved','x':2,'y':2});time.sleep(.3)
     key('Enter','Enter',13);wait_for(count(a,1));wait_for('pendingCartRestores.size===0')
-    remove(a);click('#toastClose');assert js('lastCartRemoval===null')
+    remove(a);js('hideToast()');assert js('lastCartRemoval===null')
     assert js(count(a,0))
     for width in [320,375,768,1024,1440]:
         call('Emulation.setDeviceMetricsOverride',{'width':width,'height':800,'deviceScaleFactor':1,'mobile':width<760})
