@@ -33,7 +33,7 @@ for width in widths:
     assert js("document.querySelectorAll('#inStockOnly').length===1&&document.querySelector('#inStockOnly').checked"),width
     if width<768:
         assert js("document.querySelector('.hero').getBoundingClientRect().height<760"),width
-        assert js("document.querySelector('.hero-photo').getBoundingClientRect().height<=220"),width
+        assert js("getComputedStyle(document.querySelector('.hero-photo')).maxHeight==='none'"),width
         assert js("(()=>{const t=document.querySelector('.tag-buttons').getBoundingClientRect(),s=document.querySelector('.stock-switch').getBoundingClientRect();return s.top>=t.bottom+7&&Math.abs(s.left-t.left)<3})()"),width
         for selector in ['#filters','.tag-buttons']:
             assert js(f"getComputedStyle(document.querySelector({json.dumps(selector)})).scrollbarWidth==='none'"),width
@@ -76,7 +76,10 @@ for width in [320,430,1440]:
     for w,h in [(1600,900),(900,1600),(1000,1000)]:
         hero_fixture(w,h)
         assert js("getComputedStyle(document.querySelector('.hero-photo')).objectFit==='contain'")
-        assert js("document.querySelector('.hero').getBoundingClientRect().height<"+('560' if width<768 else '760'))
+        if width<768:
+            assert js("(()=>{const i=document.querySelector('.hero-photo'),r=i.getBoundingClientRect();return Math.abs(r.height-r.width*i.naturalHeight/i.naturalWidth)<1})()")
+        else:
+            assert js("document.querySelector('.hero').getBoundingClientRect().height<760")
 js('document.querySelector(".hero-photo").src='+json.dumps(original_hero))
 # Offscreen category is revealed without changing the independent controls.
 call('Emulation.setDeviceMetricsOverride',{'width':320,'height':850,'deviceScaleFactor':1,'mobile':True})

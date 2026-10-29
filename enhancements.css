@@ -172,3 +172,15 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
  .hero-inner{padding:16px 20px}
  .hero-stamp{margin-bottom:12px}
 }
+
+/* Mobile hero: image and title share a row; copy and CTA follow below. */
+@media(max-width:767px){
+ .hero{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto;align-items:stretch}
+ .hero-photo{grid-area:1/1;display:block;width:100%;max-width:none;height:auto;max-height:none;align-self:stretch;justify-self:stretch;object-fit:contain}
+ .hero-inner{display:contents}
+ .hero .eyebrow,.hero-stamp{display:none}
+ .hero:after{display:block;position:static;grid-area:1/1;z-index:0;background:linear-gradient(180deg,transparent 25%,rgba(8,30,19,.3) 55%,rgba(8,30,19,.88));pointer-events:none}
+ .hero h1{grid-area:1/1;position:relative;z-index:1;align-self:end;margin:0;padding:28px 20px 18px;font-size:clamp(27px,7vw,34px);line-height:1.1;color:#fff;text-shadow:0 1px 4px #10291c66;overflow-wrap:normal}
+ .hero p{grid-area:2/1;margin:0;padding:16px 20px 0;max-width:none}
+ .hero .cta{grid-area:3/1;justify-self:start;align-self:start;margin:14px 20px 20px}
+}
