@@ -1,0 +1,16 @@
+schema = "EDGE_RULE_SET_V1"
+
+[[rule]]
+id = "redirect-home"
+when.path = { exact = "/index.html" }
+action.redirect = { target = "/", status_code = 308, if_no_file = false }
+
+[[rule]]
+id = "redirect-product"
+when.path = { exact = "/product.html" }
+action.redirect = { target = "/product", status_code = 308, if_no_file = false }
+
+[[rule]]
+id = "rewrite-product"
+when.path = { exact = "/product" }
+action.rewrite = { target = "/product.html", if_no_file = false }

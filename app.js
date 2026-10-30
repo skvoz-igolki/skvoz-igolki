@@ -2,8 +2,13 @@
 const $ = selector => document.querySelector(selector);
 const fmt = n => new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const productUrl = item => 'product.html?product=' + encodeURIComponent(item.slug);
-const categoryUrl = category => 'index.html?category=' + encodeURIComponent(category) + '#catalog';
+const productUrl = item =>
+  (location.protocol === 'file:' ? 'product.html' : '/product')
+  + '?product=' + encodeURIComponent(item.slug);
+const categoryUrl = category =>
+  (location.protocol === 'file:' ? 'index.html' : '/')
+  + '?category=' + encodeURIComponent(category)
+  + '#catalog';
 let lastCartRemoval = null;
 let toastVersion = 0;
 function placeToast() {

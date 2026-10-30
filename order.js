@@ -23,8 +23,13 @@ function publicSiteUrl() {
 }
 
 function publicProductUrl(product, base = publicSiteUrl()) {
-  if (!base) return null;
-  const url = new URL(productUrl(product), base);
+  if (!base || !product?.slug) return null;
+
+  const url = new URL(
+    'product?product=' + encodeURIComponent(product.slug),
+    base
+  );
+
   return url.protocol === 'https:' ? url.href : null;
 }
 
