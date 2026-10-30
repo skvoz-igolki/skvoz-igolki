@@ -12,6 +12,7 @@ with tempfile.TemporaryDirectory(prefix='skvoz-undo-',ignore_cleanup_errors=True
     temp=Path(temporary);site=temp/'site';site.mkdir()
     for source in ROOT.iterdir():
         if source.is_file() and source.suffix.lower() in ['.html','.js','.css','.ico','.png','.webp']: shutil.copy2(source,site/source.name)
+    shutil.copytree(ROOT/'assets',site/'assets')
     key=rsa.generate_private_key(public_exponent=65537,key_size=2048)
     name=x509.Name([x509.NameAttribute(NameOID.COMMON_NAME,'localhost')]);now=datetime.datetime.now(datetime.timezone.utc)
     cert=(x509.CertificateBuilder().subject_name(name).issuer_name(name).public_key(key.public_key()).serial_number(x509.random_serial_number())

@@ -8,7 +8,8 @@ function normalizePublicSiteUrl(value, fromLocation = false) {
     else if (url.search || url.hash) return null;
     // Both a configured directory and an index/product HTML address resolve to
     // the containing site directory, retaining its host and deployment subfolder.
-    if (/\.html?$/i.test(url.pathname)) url.pathname = url.pathname.slice(0, url.pathname.lastIndexOf('/') + 1);
+    if (fromLocation && /\/product\/?$/.test(url.pathname)) url.pathname = url.pathname.replace(/\/product\/?$/, '/');
+    else if (/\.html?$/i.test(url.pathname)) url.pathname = url.pathname.slice(0, url.pathname.lastIndexOf('/') + 1);
     else if (!url.pathname.endsWith('/')) url.pathname += '/';
     return url.href;
   } catch { return null; }

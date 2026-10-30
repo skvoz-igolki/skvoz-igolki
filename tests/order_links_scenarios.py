@@ -1,5 +1,5 @@
 from urllib.parse import urlparse,parse_qs,quote
-PUBLIC='https://skvoz-igolki-miv3dgeniy-7rsq.onreza.app/'
+PUBLIC='https://skvoz-igolki.ru/'
 def wait_for(expression):
     for _ in range(200):
         if js(expression):return
@@ -15,6 +15,8 @@ for slug,n in zip(slugs,[2,3]):
 for page in ['index.html','product.html?product='+slugs[0]]:
     navigate(page);loaded()
     scripts=js("[...document.scripts].filter(s=>s.src).map(s=>({name:new URL(s.src).pathname.split('/').pop(),defer:s.defer,async:s.async}))")
+    import re
+    for script in scripts: script['name']=re.sub(r'\.[a-f0-9]{20}(?=\.js$)', '', script['name'])
     names=[s['name'] for s in scripts]
     assert names.index('site-config.js')<names.index('order.js')<names.index('app.js')
     assert next(s for s in scripts if s['name']=='site-config.js')['defer']
@@ -35,13 +37,13 @@ for page in ['index.html','product.html?product='+slugs[0]]:
         assert message.count('Количество:')==2 and message.count('Цена:')==2 and 'Итого:' in message
         assert '%0A' in url and '%D0' in url
         links=[line.removeprefix('Ссылка: ') for line in message.splitlines() if line.startswith('Ссылка: ')]
-        expected=[expected_base+'product.html?product='+quote(slug,safe='') for slug in slugs] if expected_base else []
+        expected=[expected_base+'product?product='+quote(slug,safe='') for slug in slugs] if expected_base else []
         assert links==expected,(links,expected)
         assert 'file://' not in message
         for recorded in js('window.orderContexts'):
             assert recorded['config'] is not None and recorded['config']['SITE_URL']==setting
             assert recorded['base']==expected_base
-            assert recorded['product']=='product.html?product='+quote(slugs[0],safe='')
+            assert recorded['product']==('product.html?product=' if TEST_BASE.startswith('file:') else '/product?product=')+quote(slugs[0],safe='')
         assert js("document.querySelector('#basketCount').textContent")=='5'
     # Simulate an absent or late config without caching an empty value forever.
     js('window.savedShopConfig=window.SHOP_CONFIG;delete window.SHOP_CONFIG')

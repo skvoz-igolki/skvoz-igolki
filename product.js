@@ -6,6 +6,7 @@
     document.title = 'Растение не найдено — Сквозь иголки';
     $('#breadcrumbName').textContent = 'Растение не найдено';
     $('#productDetail').innerHTML = '<section class="product-error"><div class="kicker">КАТАЛОГ РАСТЕНИЙ</div><h1>Растение не найдено</h1><p>Возможно, ссылка устарела или в адресе есть опечатка.</p><a class="cta" href="index.html#catalog">Вернуться в каталог ↗</a></section>';
+    rewriteHomeLinks();
     return;
   }
   document.title = item.name + ' — Сквозь иголки';
@@ -20,6 +21,7 @@
   $('#relatedProducts').innerHTML = related.map(cardMarkup).join('');
   $('#relatedSection').hidden = !related.length;
 
+  rewriteHomeLinks();
   if (!images.length) return;
   let current = 0;
   const dialog = $('#lightbox');

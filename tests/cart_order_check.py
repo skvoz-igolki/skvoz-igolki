@@ -20,6 +20,12 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class QuietFiles(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *args): pass
+    def do_GET(self):
+        if self.path.split('?')[0]=='/product': self.path='/product.html'+('?' + self.path.split('?',1)[1] if '?' in self.path else '')
+        super().do_GET()
+    def end_headers(self):
+        self.send_header('Cache-Control', 'public, max-age=31536000, immutable' if self.path.split('?')[0].endswith(('.js','.css')) else 'no-cache')
+        super().end_headers()
 
 with tempfile.TemporaryDirectory(prefix='skvoz-cart-check-',ignore_cleanup_errors=True) as temporary:
     temp = Path(temporary)
@@ -34,14 +40,14 @@ with tempfile.TemporaryDirectory(prefix='skvoz-cart-check-',ignore_cleanup_error
     cert_path, key_path = temp/'localhost.crt', temp/'localhost.key'
     cert_path.write_bytes(certificate.public_bytes(serialization.Encoding.PEM))
     key_path.write_bytes(key.private_bytes(serialization.Encoding.PEM,serialization.PrivateFormat.PKCS8,serialization.NoEncryption()))
-    server = http.server.ThreadingHTTPServer(('127.0.0.1',0),functools.partial(QuietFiles,directory=str(ROOT)))
+    server = http.server.ThreadingHTTPServer(('127.0.0.1',0),functools.partial(QuietFiles,directory=os.environ.get('SKVOZ_SITE_ROOT',str(ROOT))))
     context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
     context.load_cert_chain(cert_path,key_path)
     server.socket = context.wrap_socket(server.socket,server_side=True)
     thread = threading.Thread(target=server.serve_forever,daemon=True)
     thread.start()
     try:
-        for label,base in [('file',ROOT.as_uri()),('https','https://127.0.0.1:'+str(server.server_port))]:
+        for label,base in [('file',Path(os.environ.get('SKVOZ_SITE_ROOT',str(ROOT))).as_uri()),('https','https://127.0.0.1:'+str(server.server_port))]:
             profile = temp/('profile-'+label)
             profile.mkdir()
             for mode in ['seed','restore']:

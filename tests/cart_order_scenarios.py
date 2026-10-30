@@ -93,15 +93,15 @@ else:
     assert ('Ссылка:' in js('window.copied')) == TEST_BASE.startswith('https:')
     assert 'file://' not in js('window.copied')
 
-    js("window.SHOP_CONFIG.SITE_URL='https://skvoz-igolki-miv3dgeniy-7rsq.onreza.app/garden';renderCart()")
+    js("window.SHOP_CONFIG.SITE_URL='https://skvoz-igolki.ru/garden';renderCart()")
     message = js('buildOrder().message')
     assert message.count('Количество:') == 2
     assert message.count('Цена:') == 2
     assert message.count('Сумма:') == 2
     assert 'Количество: 4 шт.' in message and 'Количество: 2 шт.' in message
     assert '\n\n' in message
-    assert 'https://skvoz-igolki-miv3dgeniy-7rsq.onreza.app/garden/product.html?product=tuya-smaragd' in message
-    assert 'https://skvoz-igolki-miv3dgeniy-7rsq.onreza.app/garden/product.html?product=el-golubaya' in message
+    assert 'https://skvoz-igolki.ru/garden/product?product=tuya-smaragd' in message
+    assert 'https://skvoz-igolki.ru/garden/product?product=el-golubaya' in message
     assert js('fmt(buildOrder().total)') in message
     click('#sendTelegram')
     wait_for('window.telegramNavigations.length===2')
@@ -142,11 +142,11 @@ else:
     exec(compile((ROOT / 'tests/telegram_popup_gesture.py').read_text(encoding='utf-8'), 'telegram_popup_gesture.py', 'exec'))
 
     # Invalid public addresses never leak local file paths into copied orders.
-    for invalid in ['file:///D:/private/', 'http://skvoz-igolki-miv3dgeniy-7rsq.onreza.app/', 'not a URL', 'https://skvoz-igolki-miv3dgeniy-7rsq.onreza.app/?token=secret']:
+    for invalid in ['file:///D:/private/', 'http://skvoz-igolki.ru/', 'not a URL', 'https://skvoz-igolki.ru/?token=secret']:
         js(f'window.SHOP_CONFIG.SITE_URL={json.dumps(invalid)}')
         assert js('publicSiteUrl()===null')
         assert 'Ссылка:' not in js('buildOrder().message')
-    js("window.SHOP_CONFIG.SITE_URL='https://skvoz-igolki-miv3dgeniy-7rsq.onreza.app/';window.longOrderPlant=items.find(p=>p.slug===Object.keys(cart)[0]);window.savedPlantName=window.longOrderPlant.name;window.longOrderPlant.name='x'.repeat(4500);window.open=(url,target)=>{window.mockTelegramTab={closed:false,opener:null,document:{title:'',body:{textContent:''}},location:{replace:u=>window.telegramNavigations.push(u)},close(){this.closed=true}};return window.mockTelegramTab}")
+    js("window.SHOP_CONFIG.SITE_URL='https://skvoz-igolki.ru/';window.longOrderPlant=items.find(p=>p.slug===Object.keys(cart)[0]);window.savedPlantName=window.longOrderPlant.name;window.longOrderPlant.name='x'.repeat(4500);window.open=(url,target)=>{window.mockTelegramTab={closed:false,opener:null,document:{title:'',body:{textContent:''}},location:{replace:u=>window.telegramNavigations.push(u)},close(){this.closed=true}};return window.mockTelegramTab}")
     count = js('window.telegramNavigations.length')
     click('#sendTelegram')
     wait_for('window.mockTelegramTab.closed')

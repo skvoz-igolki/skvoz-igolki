@@ -9,6 +9,16 @@ const categoryUrl = category =>
   (location.protocol === 'file:' ? 'index.html' : '/')
   + '?category=' + encodeURIComponent(category)
   + '#catalog';
+function rewriteHomeLinks() {
+  document.querySelectorAll('a[href]').forEach(link => {
+    const raw = link.getAttribute('href');
+    if (raw === '/' || raw.startsWith('/#') || raw.startsWith('index.html')) {
+      const suffix = raw.startsWith('index.html') ? raw.slice(10) : raw.slice(1);
+      link.setAttribute('href', (location.protocol === 'file:' ? 'index.html' : '/') + suffix);
+    }
+  });
+}
+rewriteHomeLinks();
 let lastCartRemoval = null;
 let toastVersion = 0;
 function placeToast() {

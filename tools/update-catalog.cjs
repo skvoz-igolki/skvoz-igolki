@@ -81,6 +81,7 @@ function updateCatalog() {
     'window.CATALOG = ' + JSON.stringify(products, null, 2).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029') + ';\n';
   fs.writeFileSync(path.join(PRODUCTS, 'index.json'), index);
   fs.writeFileSync(path.join(ROOT, 'catalog.generated.js'), generated);
+  require('./version-assets.cjs').versionAssets(ROOT);
   console.log(`Каталог обновлён: ${products.length} товаров. products/index.json и catalog.generated.js готовы.`);
   const external = products.reduce((n,p) => n + p.images.filter(image => /^https?:/.test(image)).length, 0);
   if (external) console.log(`Внешние фотографии: ${external}. Ссылки сохранены, загрузка из интернета не выполнялась.`);

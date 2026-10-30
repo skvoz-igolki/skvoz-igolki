@@ -13,6 +13,8 @@ with tempfile.TemporaryDirectory(prefix='skvoz-links-',ignore_cleanup_errors=Tru
     for source in ROOT.iterdir():
         if source.is_file() and source.suffix in ['.html','.js','.css','.png','.webp','.ico']:
             shutil.copy2(source,site/source.name);shutil.copy2(source,nested/source.name)
+    shutil.copytree(ROOT/'assets',site/'assets')
+    shutil.copytree(ROOT/'assets',nested/'assets')
     key=rsa.generate_private_key(public_exponent=65537,key_size=2048)
     name=x509.Name([x509.NameAttribute(NameOID.COMMON_NAME,'localhost')]);now=datetime.datetime.now(datetime.timezone.utc)
     cert=(x509.CertificateBuilder().subject_name(name).issuer_name(name).public_key(key.public_key()).serial_number(x509.random_serial_number())
