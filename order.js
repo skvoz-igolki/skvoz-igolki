@@ -176,7 +176,7 @@ function maxContactUrl() {
 async function sendOrderToMax() {
   if (maxOrderBusy || !cartReady || !buildOrder().entries.length) return;
   const contact = maxContactUrl();
-  if (!contact) { orderNotice('Укажите ссылку на профиль продавца MAX_CONTACT_URL в site-config.js, скопированную из MAX.'); return; }
+  if (!contact) { orderNotice('Связь через MAX временно недоступна. Пожалуйста, выберите Telegram или попробуйте позже'); return; }
   maxOrderBusy = true;
   $('#sendMax').disabled = true;
   // Reserve during the click, before reading storage or attempting clipboard access.

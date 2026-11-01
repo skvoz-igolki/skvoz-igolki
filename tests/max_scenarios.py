@@ -11,9 +11,15 @@ for page in ['index.html','product.html?product=tuya-smaragd']:
     assert js("document.querySelector('#sendMax').disabled&&document.querySelector('#toastClose')===null")
     js("window.done=false;requestCartChange('tuya-smaragd',1).then(()=>window.done=true)");wait_for('window.done')
     js("openCart();window.opens=0;window.dest='';window.copied='';window.open=()=>{window.opens++;return {closed:false,opener:null,close(){this.closed=true},location:{replace:u=>window.dest=u}}};Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async t=>window.copied=t}})")
-    js("SHOP_CONFIG.MAX_CONTACT_URL='';document.querySelector('#sendMax').click()")
+    expected='https://max.ru/u/f9LHodD0cOK_pii8PJA9GDRXPq8bQW_r_vbuGnqgusdUTxmHOduB3OaolQI'
+    assert js('maxContactUrl()')==expected
+    js("document.querySelector('#sendMax').click()")
+    wait_for('!maxOrderBusy')
+    assert js('window.dest')==expected
+    assert js("window.copied===buildOrder().message&&window.copied.includes('https://skvoz-igolki.ru/product?product=')")
+    js("window.opens=0;SHOP_CONFIG.MAX_CONTACT_URL='';document.querySelector('#sendMax').click()")
     assert js('window.opens===0')
-    assert js("document.querySelector('#orderNotice').textContent.includes('MAX_CONTACT_URL')")
+    assert js("document.querySelector('#orderNotice').textContent")== 'Связь через MAX временно недоступна. Пожалуйста, выберите Telegram или попробуйте позже'
     for bad in ['javascript:alert(1)','https://max.ru.evil/u/profile','https://max.ru/:share','file:///profile']:
         js('SHOP_CONFIG.MAX_CONTACT_URL='+json.dumps(bad))
         assert js('maxContactUrl()===null')

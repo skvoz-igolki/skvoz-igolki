@@ -1,16 +1,20 @@
 'use strict';
 const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),assert=require('node:assert/strict');
 const {versionAssets}=require('../tools/version-assets.cjs');
+const {checkBuild}=require('../tools/check-build.cjs');
 const root=path.resolve(__dirname,'..'),temp=fs.mkdtempSync(path.join(os.tmpdir(),'skvoz-hashes-'));
 try {
   const sources=['site-config.js','catalog.generated.js','catalog.js','cart.js','cart-storage.js','order.js','app.js','product.js','styles.css','enhancements.css'];
   for(const name of [...sources,'index.html','product.html','cart-storage.html']) fs.copyFileSync(path.join(root,name),path.join(temp,name));
   let previous=versionAssets(temp);
   assert.deepEqual(versionAssets(temp),previous,'Build must be reproducible');
+  checkBuild(temp);
   for(const name of sources){
     const old=previous[name],bytes=fs.readFileSync(path.join(temp,old));
     fs.appendFileSync(path.join(temp,name),'\n/* cache update check */\n');
+    assert.throws(()=>checkBuild(temp));
     const next=versionAssets(temp);
+    checkBuild(temp);
     assert.notEqual(next[name],old,name);
     assert.deepEqual(fs.readFileSync(path.join(temp,old)),bytes,'Old immutable assets must remain intact');
     previous=next;
