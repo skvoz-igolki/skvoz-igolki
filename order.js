@@ -70,7 +70,9 @@ function updateOrderActions() {
   const order = buildOrder();
   $('#sendTelegram').disabled = !cartReady || !order.entries.length;
   $('#sendMax').disabled = !cartReady || !order.entries.length || maxOrderBusy;
-  $('#maxFallback').hidden = true;
+  updateMaxContact();
+  $('#maxShareFallback').hidden = true;
+  $('#maxShareFallback').removeAttribute('href');
   $('#telegramFallback').hidden = true;
   $('#telegramFallback').removeAttribute('href');
   if (!order.entries.length) orderNotice('');
@@ -173,24 +175,65 @@ function maxContactUrl() {
     return url.href;
   } catch { return null; }
 }
+// Local conservative URL-size guard, not a documented MAX service limit.
+const MAX_SHARE_URL_LIMIT = 8000;
+function maxShareUrl(order) {
+  if (!order.entries.length || !order.message) return null;
+  const url = 'https://max.ru/:share?text=' + encodeURIComponent(order.message);
+  return url.length <= MAX_SHARE_URL_LIMIT ? url : null;
+}
+function updateMaxContact() {
+  const contact = maxContactUrl();
+  const link = $('#maxFallback');
+  link.hidden = !contact;
+  if (contact) link.href = contact;
+  else link.removeAttribute('href');
+}
 async function sendOrderToMax() {
   if (maxOrderBusy || !cartReady || !buildOrder().entries.length) return;
-  const contact = maxContactUrl();
-  if (!contact) { orderNotice('Связь через MAX временно недоступна. Пожалуйста, выберите Telegram или попробуйте позже'); return; }
   maxOrderBusy = true;
   $('#sendMax').disabled = true;
-  // Reserve during the click, before reading storage or attempting clipboard access.
-  let tab;
-  try { tab = window.open('about:blank', '_blank'); if (tab) tab.opener = null; } catch {}
+  updateMaxContact();
+  const fallback = $('#maxShareFallback');
+  fallback.hidden = true;
+  fallback.removeAttribute('href');
+  // Preserve the user gesture before refreshing shared storage.
+  let tab = null;
+  try {
+    tab = window.open('about:blank', '_blank');
+    if (tab) tab.opener = null;
+  } catch { tab?.close(); tab = null; }
   try {
     const order = await currentOrder();
-    if (!order.entries.length) { tab?.close(); return; }
-    const copied = await copyOrderText(order);
-    const fallback = $('#maxFallback');
-    fallback.href = contact; fallback.hidden = false;
-    if (tab && !tab.closed) tab.location.replace(contact);
-    orderNotice((copied ? 'Заказ скопирован. Вставьте его в чат MAX и отправьте самостоятельно.' : 'Скопируйте выделенный текст заказа вручную и вставьте его в чат MAX.') + (!tab || tab.closed ? ' Если чат не открылся, нажмите «Открыть контакт MAX».' : ''));
+    if (!order.entries.length) {
+      tab?.close();
+      orderNotice('В корзине нет доступных растений для заказа.');
+      return;
+    }
+    const url = maxShareUrl(order);
+    if (!url) {
+      tab?.close();
+      orderNotice('Заказ слишком длинный для надёжной передачи ссылкой. Скопируйте заказ и вставьте его вручную в чат продавца в MAX.');
+      $('#copyOrder').focus();
+      return;
+    }
+    fallback.href = url;
+    fallback.hidden = false;
+    const instruction = 'В MAX выберите чат продавца, проверьте текст заказа и отправьте его самостоятельно. Если текст не появился, скопируйте заказ и вставьте его вручную.';
+    if (tab && !tab.closed) {
+      tab.location.replace(url);
+      orderNotice(instruction);
+    } else {
+      orderNotice('Новая вкладка не открылась. Нажмите «Открыть MAX с заказом» ниже. ' + instruction);
+      fallback.focus();
+    }
   } catch {
-    tab?.close(); orderNotice('Не удалось подготовить заказ для MAX. Попробуйте скопировать заказ.');
-  } finally { maxOrderBusy = false; $('#sendMax').disabled = !cartReady || !buildOrder().entries.length; }
+    tab?.close();
+    fallback.hidden = true;
+    fallback.removeAttribute('href');
+    orderNotice('Не удалось подготовить переход в MAX. Попробуйте скопировать заказ и открыть профиль продавца.');
+  } finally {
+    maxOrderBusy = false;
+    $('#sendMax').disabled = !cartReady || !buildOrder().entries.length;
+  }
 }

@@ -17,7 +17,9 @@ for page in ['index.html','product.html?product=tuya-smaragd']:
     count=js("cart['tuya-smaragd']")
     old=js("document.querySelector('script[src*=\"assets/site-config.\"]').src")
     stub();js('openCart();document.querySelector("#sendMax").click()')
-    assert js('window.dest')==''
+    wait_for('!maxOrderBusy')
+    assert js('window.dest').startswith('https://max.ru/:share?text=')
+    assert js("document.querySelector('#maxFallback').hidden")
     assert 'MAX_CONTACT_URL' not in js('document.querySelector("#orderNotice").textContent')
     build(contact)
     call('Page.reload',{'ignoreCache':False});time.sleep(.3);wait_for('typeof cartReady!=="undefined"&&cartReady&&maxContactUrl()==='+json.dumps(contact))
@@ -25,7 +27,9 @@ for page in ['index.html','product.html?product=tuya-smaragd']:
     assert js("document.querySelectorAll('script[src*=\"assets/site-config.\"]').length")==1
     assert js("cart['tuya-smaragd']")==count
     stub();js('openCart();document.querySelector("#sendMax").click()');wait_for('!maxOrderBusy')
-    assert js('window.dest')==contact
+    assert js('window.dest').startswith('https://max.ru/:share?text=')
+    assert js("document.querySelector('#maxFallback').href")==contact
+    js("document.querySelector('#copyOrder').click()");wait_for('window.copied.length>0')
     assert js('window.copied===buildOrder().message')
     assert 'https://skvoz-igolki.ru/product?product=tuya-smaragd' in js('window.copied')
     assert js("cart['tuya-smaragd']")==count
