@@ -5,5 +5,5 @@ window.SHOP_CONFIG = {
   SITE_URL: 'https://skvoz-igolki.ru/',
   TELEGRAM_USERNAME: 'Uliamel',
   // Прямая HTTPS-ссылка на сообщения продавца: https://vk.me/<короткое_имя>.
-  VK_CONTACT_URL: 'https://vk.ru/id619126239'
+  VK_CONTACT_URL: 'https://vk.me/id619126239'
 };
