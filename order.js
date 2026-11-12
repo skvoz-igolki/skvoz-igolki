@@ -70,8 +70,6 @@ function updateOrderActions() {
   const order = buildOrder();
   $('#sendTelegram').disabled = !cartReady || !order.entries.length;
   $('#sendVk').disabled = !cartReady || !order.entries.length || vkOrderBusy;
-  $('#vkFallback').hidden = true;
-  $('#vkFallback').removeAttribute('href');
   $('#telegramFallback').hidden = true;
   $('#telegramFallback').removeAttribute('href');
   if (!order.entries.length) orderNotice('');
@@ -180,12 +178,9 @@ function vkContactUrl() {
 }
 async function sendOrderToVk() {
   if (vkOrderBusy || !cartReady || !buildOrder().entries.length) return;
-  const fallback = $('#vkFallback');
-  fallback.hidden = true;
-  fallback.removeAttribute('href');
   const contact = vkContactUrl();
   if (!contact) {
-    orderNotice('????? ????? ????????? ???????? ??????????. ??????????, ???????? Telegram ??? ?????????? ?????.');
+    orderNotice('\u0421\u0432\u044f\u0437\u044c \u0447\u0435\u0440\u0435\u0437 \u0412\u041a\u043e\u043d\u0442\u0430\u043a\u0442\u0435 \u0432\u0440\u0435\u043c\u0435\u043d\u043d\u043e \u043d\u0435\u0434\u043e\u0441\u0442\u0443\u043f\u043d\u0430. \u041f\u043e\u0436\u0430\u043b\u0443\u0439\u0441\u0442\u0430, \u0432\u044b\u0431\u0435\u0440\u0438\u0442\u0435 Telegram \u0438\u043b\u0438 \u043f\u043e\u043f\u0440\u043e\u0431\u0443\u0439\u0442\u0435 \u043f\u043e\u0437\u0436\u0435.');
     return;
   }
   vkOrderBusy = true;
@@ -193,33 +188,27 @@ async function sendOrderToVk() {
   try {
     const order = await currentOrder();
     if (!order.entries.length) {
-      orderNotice('? ??????? ??? ????????? ???????? ??? ??????.');
+      orderNotice('\u0412 \u043a\u043e\u0440\u0437\u0438\u043d\u0435 \u043d\u0435\u0442 \u0434\u043e\u0441\u0442\u0443\u043f\u043d\u044b\u0445 \u0440\u0430\u0441\u0442\u0435\u043d\u0438\u0439 \u0434\u043b\u044f \u0437\u0430\u043a\u0430\u0437\u0430.');
       return;
     }
     const copied = await copyOrderText(order);
     const latest = await currentOrder();
     if (latest.message !== order.message || vkContactUrl() !== contact) {
       $('#manualOrder')?.remove();
-      orderNotice('??????? ?????????? ?? ????? ??????????. ????????? ????????, ????? ??????????? ?????????? ?????.');
+      orderNotice('\u0417\u0430\u043a\u0430\u0437 \u0438\u0437\u043c\u0435\u043d\u0438\u043b\u0441\u044f \u0432\u043e \u0432\u0440\u0435\u043c\u044f \u043f\u043e\u0434\u0433\u043e\u0442\u043e\u0432\u043a\u0438. \u041f\u043e\u0432\u0442\u043e\u0440\u0438\u0442\u0435 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0435, \u0447\u0442\u043e\u0431\u044b \u0441\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0430\u043a\u0442\u0443\u0430\u043b\u044c\u043d\u044b\u0439 \u0437\u0430\u043a\u0430\u0437.');
       return;
     }
-    fallback.href = contact;
-    fallback.hidden = false;
     if (!copied) {
       showManualOrder(order);
-      orderNotice('?????????? ?????????? ????? ?????? ???????, ????? ???????? ????????? ????????? ?? ?????? ????.');
+      orderNotice('\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u0441\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0437\u0430\u043a\u0430\u0437 \u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0447\u0435\u0441\u043a\u0438. \u0421\u043a\u043e\u043f\u0438\u0440\u0443\u0439\u0442\u0435 \u0442\u0435\u043a\u0441\u0442 \u0432\u0440\u0443\u0447\u043d\u0443\u044e \u0438 \u0432\u0441\u0442\u0430\u0432\u044c\u0442\u0435 \u0432 \u0434\u0438\u0430\u043b\u043e\u0433 \u0412\u041a\u043e\u043d\u0442\u0430\u043a\u0442\u0435');
       $('#manualOrder')?.focus();
       $('#manualOrder')?.select();
       return;
     }
-    // Navigate only after the cart is refreshed and copy attempt has completed.
-    // A normal top-level link works more reliably across desktop and mobile browsers.
-    orderNotice('????? ??????????. ???????? ??? ? ????????? ????????? ? ????????? ????????.');
+    orderNotice('\u0417\u0430\u043a\u0430\u0437 \u0441\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d. \u0412\u0441\u0442\u0430\u0432\u044c\u0442\u0435 \u0435\u0433\u043e \u0432 \u0434\u0438\u0430\u043b\u043e\u0433 \u0412\u041a\u043e\u043d\u0442\u0430\u043a\u0442\u0435 \u0438 \u043e\u0442\u043f\u0440\u0430\u0432\u044c\u0442\u0435');
     window.location.assign(contact);
   } catch {
-    fallback.href = contact;
-    fallback.hidden = false;
-    orderNotice('?? ??????? ??????????? ?????. ???????? ????????? ????????? ?? ?????? ???? ??? ?????????? ????? ???????.');
+    orderNotice('\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u043e\u0442\u043a\u0440\u044b\u0442\u044c \u0412\u041a\u043e\u043d\u0442\u0430\u043a\u0442\u0435. \u041f\u043e\u043f\u0440\u043e\u0431\u0443\u0439\u0442\u0435 \u043f\u0435\u0440\u0435\u0439\u0442\u0438 \u0432 \u0434\u0438\u0430\u043b\u043e\u0433 \u0441\u0430\u043c\u043e\u0441\u0442\u043e\u044f\u0442\u0435\u043b\u044c\u043d\u043e: ' + contact);
   } finally {
     vkOrderBusy = false;
     $('#sendVk').disabled = !cartReady || !buildOrder().entries.length;
