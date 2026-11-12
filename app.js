@@ -244,7 +244,7 @@ $('#confirmClearCart').onclick = async () => {
 };
 $('#copyOrder').onclick = copyCurrentOrder;
 $('#sendTelegram').onclick = sendOrderToTelegram;
-$('#sendMax').onclick = sendOrderToMax;
+$('#sendVk').onclick = sendOrderToVk;
 window.addEventListener('cartchange', renderCart);
 $('#year').textContent = new Date().getFullYear();
 renderCart();

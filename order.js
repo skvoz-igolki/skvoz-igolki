@@ -69,10 +69,9 @@ function orderNotice(message) {
 function updateOrderActions() {
   const order = buildOrder();
   $('#sendTelegram').disabled = !cartReady || !order.entries.length;
-  $('#sendMax').disabled = !cartReady || !order.entries.length || maxOrderBusy;
-  updateMaxContact();
-  $('#maxShareFallback').hidden = true;
-  $('#maxShareFallback').removeAttribute('href');
+  $('#sendVk').disabled = !cartReady || !order.entries.length || vkOrderBusy;
+  $('#vkFallback').hidden = true;
+  $('#vkFallback').removeAttribute('href');
   $('#telegramFallback').hidden = true;
   $('#telegramFallback').removeAttribute('href');
   if (!order.entries.length) orderNotice('');
@@ -88,23 +87,27 @@ async function currentOrder() {
   return buildOrder();
 }
 
+function showManualOrder(order) {
+  // Keep a single selectable fallback inside the cart modal.
+  let textarea = $('#manualOrder');
+  if (!textarea) {
+    textarea = document.createElement('textarea');
+    textarea.id = 'manualOrder';
+    textarea.className = 'order-fallback';
+    textarea.readOnly = true;
+    textarea.setAttribute('aria-label', 'Текст заказа для ручного копирования');
+    $('#manualOrderContainer').append(textarea);
+  }
+  textarea.value = order.message;
+  textarea.focus();
+  textarea.select();
+}
+
 async function copyOrderText(order) {
   try {
     await navigator.clipboard.writeText(order.message);
   } catch {
-    // Keep a single selectable fallback inside the cart modal.
-    let textarea = $('#manualOrder');
-    if (!textarea) {
-      textarea = document.createElement('textarea');
-      textarea.id = 'manualOrder';
-      textarea.className = 'order-fallback';
-      textarea.readOnly = true;
-      textarea.setAttribute('aria-label', 'Текст заказа для ручного копирования');
-      $('#manualOrderContainer').append(textarea);
-    }
-    textarea.value = order.message;
-    textarea.focus();
-    textarea.select();
+    showManualOrder(order);
     let copied = false;
     try { copied = document.execCommand('copy'); } catch {}
     if (!copied) {
@@ -166,38 +169,27 @@ async function sendOrderToTelegram() {
   }
 }
 
-let maxOrderBusy = false;
-function maxContactUrl() {
+let vkOrderBusy = false;
+function vkContactUrl() {
   try {
-    const url = new URL(String(window.SHOP_CONFIG?.MAX_CONTACT_URL || '').trim());
-    // Use the exact contact link copied from MAX, never construct one from a phone/name.
-    if (url.protocol !== 'https:' || url.hostname !== 'max.ru' || url.port || url.username || url.password || !new RegExp('^/u/[A-Za-z0-9_-]+/?$').test(url.pathname) || url.search || url.hash) return null;
+    const url = new URL(String(window.SHOP_CONFIG?.VK_CONTACT_URL || '').trim());
+    // Only the documented direct-message format, not a profile or share link.
+    if (url.protocol !== 'https:' || url.hostname !== 'vk.me' || url.port || url.username || url.password || !/^\/[A-Za-z0-9_][A-Za-z0-9_.]*\/?$/.test(url.pathname) || url.search || url.hash) return null;
     return url.href;
   } catch { return null; }
 }
-// Local conservative URL-size guard, not a documented MAX service limit.
-const MAX_SHARE_URL_LIMIT = 8000;
-function maxShareUrl(order) {
-  if (!order.entries.length || !order.message) return null;
-  const url = 'https://max.ru/:share?text=' + encodeURIComponent(order.message);
-  return url.length <= MAX_SHARE_URL_LIMIT ? url : null;
-}
-function updateMaxContact() {
-  const contact = maxContactUrl();
-  const link = $('#maxFallback');
-  link.hidden = !contact;
-  if (contact) link.href = contact;
-  else link.removeAttribute('href');
-}
-async function sendOrderToMax() {
-  if (maxOrderBusy || !cartReady || !buildOrder().entries.length) return;
-  maxOrderBusy = true;
-  $('#sendMax').disabled = true;
-  updateMaxContact();
-  const fallback = $('#maxShareFallback');
+async function sendOrderToVk() {
+  if (vkOrderBusy || !cartReady || !buildOrder().entries.length) return;
+  const fallback = $('#vkFallback');
   fallback.hidden = true;
   fallback.removeAttribute('href');
-  // Preserve the user gesture before refreshing shared storage.
+  const contact = vkContactUrl();
+  if (!contact) {
+    orderNotice('Связь через ВКонтакте временно недоступна. Пожалуйста, выберите Telegram или попробуйте позже.');
+    return;
+  }
+  vkOrderBusy = true;
+  $('#sendVk').disabled = true;
   let tab = null;
   try {
     tab = window.open('about:blank', '_blank');
@@ -210,30 +202,41 @@ async function sendOrderToMax() {
       orderNotice('В корзине нет доступных растений для заказа.');
       return;
     }
-    const url = maxShareUrl(order);
-    if (!url) {
+    const copied = await copyOrderText(order);
+    // Clipboard permission can take time; never open a dialog with a stale order.
+    const latest = await currentOrder();
+    if (latest.message !== order.message || vkContactUrl() !== contact) {
       tab?.close();
-      orderNotice('Заказ слишком длинный для надёжной передачи ссылкой. Скопируйте заказ и вставьте его вручную в чат продавца в MAX.');
-      $('#copyOrder').focus();
+      $('#manualOrder')?.remove();
+      orderNotice('Заказ изменился во время подготовки. Нажмите «Отправить заказ в ВК» ещё раз, чтобы скопировать актуальный текст.');
       return;
     }
-    fallback.href = url;
+    fallback.href = contact;
     fallback.hidden = false;
-    const instruction = 'В MAX выберите чат продавца, проверьте текст заказа и отправьте его самостоятельно. Если текст не появился, скопируйте заказ и вставьте его вручную.';
-    if (tab && !tab.closed) {
-      tab.location.replace(url);
-      orderNotice(instruction);
-    } else {
-      orderNotice('Новая вкладка не открылась. Нажмите «Открыть MAX с заказом» ниже. ' + instruction);
-      fallback.focus();
+    if (!copied) {
+      tab?.close();
+      showManualOrder(order);
+      orderNotice('Браузер запретил копирование. Скопируйте выделенный текст заказа вручную, откройте диалог ВКонтакте по ссылке ниже и вставьте сообщение.');
+      $('#manualOrder')?.focus();
+      $('#manualOrder')?.select();
+      return;
     }
+    const instruction = 'Заказ скопирован. Вставьте его в сообщение ВКонтакте и отправьте продавцу.';
+    if (tab && !tab.closed) {
+      try { tab.location.replace(contact); }
+      catch { tab.close(); tab = null; }
+    }
+    if (!tab || tab.closed) {
+      orderNotice(instruction + ' Новая вкладка не открылась. Нажмите «Открыть диалог ВКонтакте».');
+      fallback.focus();
+    } else orderNotice(instruction);
   } catch {
     tab?.close();
     fallback.hidden = true;
     fallback.removeAttribute('href');
-    orderNotice('Не удалось подготовить переход в MAX. Попробуйте скопировать заказ и открыть профиль продавца.');
+    orderNotice('Не удалось подготовить заказ. Попробуйте ещё раз или воспользуйтесь кнопкой «Скопировать заказ».');
   } finally {
-    maxOrderBusy = false;
-    $('#sendMax').disabled = !cartReady || !buildOrder().entries.length;
+    vkOrderBusy = false;
+    $('#sendVk').disabled = !cartReady || !buildOrder().entries.length;
   }
 }

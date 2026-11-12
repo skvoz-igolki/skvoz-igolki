@@ -165,8 +165,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 .hero-stamp{right:18px;bottom:16px}
 .add,.product-add{display:flex;align-items:center;justify-content:center;text-align:center}
 .cart-label-full,.cart-label-short{text-align:center}
-.max-button{margin-top:10px;min-height:48px;background:#e5eedb;color:var(--pine);border:1px solid #b9cbb3;font-size:13px}
-.max-button:hover:not(:disabled){background:#d8e8c9}
+.vk-button{margin-top:10px;min-height:48px;background:#e5eedb;color:var(--pine);border:1px solid #b9cbb3;font-size:13px}
+.vk-button:hover:not(:disabled){background:#d8e8c9}
 @media(max-width:767px){
  .hero-photo{height:auto;max-height:220px;max-width:100%;width:100%;object-fit:contain}
  .hero-inner{padding:16px 20px}
